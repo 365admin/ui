@@ -1,15 +1,16 @@
 "use client"
+
 // copilot document this
 //
 import React, { use, useContext, useEffect, useState } from "react"
 import { set } from "date-fns"
 
+import { Button } from "@/registry/new-york/ui/button"
 import { KoksmatContext } from "@/app/koksmat/context"
 
 import { PowerShell } from "../../components/powershell"
 import { PageContextSectionHeader } from "../../tenants/[tenant]/site/[site]/components/page-section-header"
 import { NavigationContext } from "../context"
-import { Button } from "@/registry/new-york/ui/button"
 
 export interface ShippingProps {
   label: string
@@ -36,14 +37,26 @@ export default function ShippingComponent(props: ShippingProps) {
   const [working, setworking] = useState(false)
 
   const [ran, setran] = useState(false)
+const [script, setscript] = useState("")
+useEffect(() => {
+  const finalScript = `
+  function run {
+    ${props.script}
+  }
+  run
+  `
+
+
+setscript(finalScript)
+ 
+}, [props.script])
 
   useEffect(() => {
     if (!navigator.shippingMan) return
-    const subscriptionId = navigator.shippingMan.subscribe(
-      need,
-      {onTagAdded: (tag, data) => {
+    const subscriptionId = navigator.shippingMan.subscribe(need, {
+      onTagAdded: (tag, data) => {
         let allNeedSatisfied = true
-        
+
         for (const n of need) {
           if (!cargo(n)) {
             allNeedSatisfied = false
@@ -51,8 +64,8 @@ export default function ShippingComponent(props: ShippingProps) {
           }
         }
         setsatisfied(allNeedSatisfied)
-      }}
-    )
+      },
+    })
 
     return () => {
       navigator.shippingMan.unsubscribe(subscriptionId)
@@ -75,18 +88,29 @@ export default function ShippingComponent(props: ShippingProps) {
         <div>
           <div className="mb-4">
             <div className="flex">
-            <div className="font-bold">{label}</div>
-            <div className="grow"></div>
-            <Button variant={"link"} onClick={()=>{
-              produce.forEach((p) => {
-                
-                ship(p, "dummy")
-              })
-            }} >Produce all </Button>
+              <div className="font-bold">{label}</div>
+              <div className="grow"></div>
+              <Button
+                variant={"link"}
+                onClick={() => {
+                  produce.forEach((p) => {
+                    ship(p, "dummy")
+                  })
+                }}
+              >
+                Produce all{" "}
+              </Button>
             </div>
             <div className="text-xs">
-              need: <span className="font-bold">{need ? need.join(" | ") : "n.a."} </span>{" "}
-              produce :<span className="font-bold">{produce ? produce.join(" | "):"n.a."} </span>satisfied{" "}
+              need:{" "}
+              <span className="font-bold">
+                {need ? need.join(" | ") : "n.a."}{" "}
+              </span>{" "}
+              produce :
+              <span className="font-bold">
+                {produce ? produce.join(" | ") : "n.a."}{" "}
+              </span>
+              satisfied{" "}
               <span className="font-bold">
                 {satisfied ? "Satisfied" : "Not Satisfied"}{" "}
               </span>
@@ -115,25 +139,25 @@ export default function ShippingComponent(props: ShippingProps) {
       {satisfied && (
         <PowerShell<any>
           showDebug={navigator.traceLevel > 3}
-
           ran={ran}
           setran={(r) => {
             setran(r)
-          } }
+          }}
           onData={(data) => {
             setworking(false)
             produce.forEach((p) => {
               ship(p, data)
-            }
-            )
+            })
             setdata(data)
-          } }
+          }}
           onMessage={(message) => {
             setlog(message.message)
-          } }
+          }}
           onError={(error) => {
             seterror(error)
-          } } script={""}        />
+          }}
+          script={script}
+        />
       )}
     </div>
   )

@@ -60,15 +60,17 @@ export function SocketLogger(props: {
         transport: "websocket",
         endpoint: "ws://localhost:8000/connection/websocket",
       },
-      {
-        transport: "http_stream",
-        endpoint: "http://localhost:8000/connection/http_stream",
-      },
-      {
-        transport: "sse",
-        endpoint: "http://localhost:8000/connection/sse",
-      },
+      // {
+      //   transport: "http_stream",
+      //   endpoint: "http://localhost:8000/connection/http_stream",
+      // },
+      // {
+      //   transport: "sse",
+      //   endpoint: "http://localhost:8000/connection/sse",
+      // },
     ]
+
+    
     const centrifuge = new Centrifuge(transports)
     centrifuge.connect()
     centrifuge.on("connected", onConnect)

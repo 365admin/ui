@@ -1,6 +1,6 @@
 "use client"
 
-import { useContext, useEffect, useState } from "react"
+import { useContext, useEffect, useMemo, useState } from "react"
 
 import {
   LogEntry,
@@ -16,6 +16,7 @@ import { getSlugElement } from "@/app/nav/components"
 import { loadCargo, saveCargo } from "@/app/nav/server"
 import { debug } from "console"
 import { useSearchParams } from "next/navigation"
+import { CargoHold } from "./journeys/[journey]/[id]/[[...slug]]"
 
 type Props = {
   children?: React.ReactNode
@@ -53,9 +54,10 @@ export const NavigationProvider = ({ children }: Props) => {
   const [shippingMan, setshippingMan] = useState(new ShippingMan())
   const [internalInstanceId, setInternalInstanceId] = useState("1")
   const [log, setlog] = useState<LogEntry[]>([])
-
+const [rootPath, setrootPath] = useState("")
   const [currentContainer, setcurrentContainer] = useState<Container>()
   const [currentWaypoint, setcurrentWaypoint] = useState<Waypoint>()
+  const cargoHold = useMemo(() => new CargoHold({journey:"",waypoints,triggers:[],metadata:{app:"",name:"",description:""}}), [waypoints])
   const [position, setposition] = useState<Position>({
     journeyName: "",
     id: "",
@@ -93,7 +95,7 @@ export const NavigationProvider = ({ children }: Props) => {
       }
       const findContainer = (containerName: string,waypoint?:Waypoint): Container | undefined => {
         if (!waypoint) return undefined
-        return waypoint.loads.containers.find((container) =>  getSlugElement(container.name) === containerName ?? undefined
+        return waypoint?.loads?.containers.find((container) =>  getSlugElement(container.name) === containerName ?? undefined
         )
       }
       const wp = findWaypoint(port)
@@ -125,24 +127,25 @@ export const NavigationProvider = ({ children }: Props) => {
       if (cargo.has(tag)) {
         if (cargo.get(tag) === data) return
       }
-      
+
       cargo.set(tag, data)
-     
+
       const logEntry: LogEntry = {
         tag: "bag updated",
         data: tag,
         timestamp: new Date().toISOString(),
       }
       setlog([...log, logEntry])
-      
+
       console.log("bag update", tag, data)
       shippingMan.announce(tag, data)
       setversion(version + 1)
-      
-      return saveCargo(position.journeyName,position.id,
+
+      return saveCargo(position.journeyName, position.id,
         {
-        log:[...log, logEntry],
-        cargo:Array.from(cargo.entries())})
+          log: [...log, logEntry],
+          cargo: Array.from(cargo.entries())
+        })
     },
     traceLevel,
 
@@ -206,11 +209,18 @@ export const NavigationProvider = ({ children }: Props) => {
     log,
     shippingMan,
     cargoKeys: function (): string[] {
-      return Array.from( cargo.keys())
+      return Array.from(cargo.keys())
     },
     cargo: function (key: string): string | undefined {
       return cargo.get(key)
-     
+
+    },
+    cargoMetadata: function (key: string) {
+      return cargoHold.cargoAtributes(key)
+    },
+    rootPath,
+    setRootPath: function (rootPath: string): void {
+      setrootPath(rootPath)
     }
   }
   return (

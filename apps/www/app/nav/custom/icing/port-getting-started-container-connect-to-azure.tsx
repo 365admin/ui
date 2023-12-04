@@ -15,7 +15,7 @@
     return (
       <div className="min-h-screen">
       <Badge>Under contruction</Badge>
-       
+        
       </div>
     )
   }

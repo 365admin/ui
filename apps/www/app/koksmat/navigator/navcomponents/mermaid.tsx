@@ -77,7 +77,7 @@ const { waypoint } = props
 
     d += "sequenceDiagram\n"
 
-    waypoint.loads.containers.map((container) => {
+    waypoint?.loads?.containers.map((container) => {
     const from = getWho(container)
     const to  = getApprover(container)
     if (from && to){

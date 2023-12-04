@@ -193,16 +193,24 @@ export function JourneyView(props: {
         {navigator.traceLevel > 4 && (
           <div>
             <div>
-              <div>
+              {/* <div>
                 <div className="text-4xl">Context</div>
                 <pre>{JSON.stringify(navigator, null, 2)}</pre>
-              </div>
+              </div> */}
               <div>
                 <div className="text-4xl">Roles</div>
                 <pre>{cargoHold?.roleYaml}</pre>
               </div>
               <div>
                 <div className="text-4xl">Entities</div>
+                {cargoHold.cargoTypes.sort((a,b)=>a.name.localeCompare(b.name)).map((cargoType) => {
+                  return (
+                    <div key={cargoType.name}>
+                      <div className="text-2xl">{cargoType.name}</div>
+                  
+                    </div>
+                  )
+                })}
                 <pre>{cargoHold?.cargoYaml}</pre>
               </div>
             </div>
@@ -255,7 +263,7 @@ export default function View(props: ScopedProps<ViewProps>): SeaView{
               <div key={waypoint.port}>
                  
                 <Port portname={waypoint.port}>
-                  {waypoint.loads.containers.map((container) => {
+                  {waypoint?.loads?.containers.map((container) => {
                     return (
                       <div key={container.name}>
                         <Container containername={container.name}>

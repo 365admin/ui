@@ -57,7 +57,7 @@ export class ShippingMan {
 }
 
 export function tagsToNames(tags: string[]): string[] {
-  const names = tags.map((tag) => {
+  const names = tags?.map((tag) => {
     const s = tag.split(" ")
     return s[0]
   })

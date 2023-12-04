@@ -1,0 +1,110 @@
+{
+  "journey": "v1",
+  "metadata": {
+    "app": "icing",
+    "name": "Install Icing",
+    "description": ""
+  },
+  "waypoints": [
+    {
+      "port": "Getting started",
+      "key": "getting-started",
+      "done": [
+        "invitation"
+      ],
+      "loads": {
+        "containers": [
+          {
+            "container": null,
+            "name": "Introduction",
+            "key": "intro",
+            "who": [
+              "you"
+            ],
+            "needs": [
+              "trigger"
+            ],
+            "produces": [
+              "learning what"
+            ],
+            "guide": "Welcome to Koksmat. Your helping hand in our digital Kitchen. \nThe word Koksmat is danish and means the helping hand to the chef in the kitchen of a ship. \nHelping each others succeed with our work and share our knowledge is what this is all about.\n\nKoksmat is Open Source: https://github.com/koksmat-com.\n",
+            "how": "This is how you do it\n",
+            "script": "write-host \"Getting domain\"  \n"
+          },
+          {
+            "container": null,
+            "name": "Connect to Azure",
+            "who": [
+              "you"
+            ],
+            "needs": null,
+            "produces": [
+              "tenantdomain"
+            ],
+            "how": "# Get the tenant name\n$tenantName = (Get-AzureADTenantDetail).VerifiedDomains[0].Name\nwrite-host \"Tenant name is $tenantName\"\n",
+            "script": "write-host \"Getting domain\"  \n"
+          },
+          {
+            "container": null,
+            "name": "Connect to SharePoint",
+            "who": [
+              "you"
+            ],
+            "needs": null,
+            "produces": [
+              "sharepointConnection"
+            ],
+            "how": null,
+            "script": "write-host \"Getting domain\"  \n"
+          },
+          {
+            "container": null,
+            "name": "Install Intra365",
+            "who": [
+              "you"
+            ],
+            "needs": [
+              "sharepointConnection"
+            ],
+            "produces": [
+              "sharepointSite"
+            ],
+            "how": null,
+            "script": "write-host \"Getting domain\"  \n"
+          }
+        ]
+      }
+    },
+    {
+      "port": "Compliance & Security",
+      "loads": {
+        "containers": [
+          {
+            "container": null,
+            "name": "Transparency",
+            "key": "transparency",
+            "who": [
+              "you"
+            ],
+            "produces": [
+              "learning what"
+            ],
+            "needs": null
+          },
+          {
+            "container": null,
+            "name": "Privacy",
+            "key": "privacy",
+            "who": [
+              "you"
+            ],
+            "needs": null,
+            "produces": [
+              "learning what"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

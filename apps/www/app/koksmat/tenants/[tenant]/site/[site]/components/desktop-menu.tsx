@@ -121,6 +121,15 @@ export function NavigationMenuKoksmat(): JSX.Element {
       <div className="grow"></div>
    
       <Menubar className="ml-0  border-0">
+      <MenubarMenu>
+          <MenubarTrigger>Journeys</MenubarTrigger>
+          <MenubarContent>
+            <MenubarItem disabled> New Journey</MenubarItem>
+            <MenubarItem disabled={!site}>   <Link
+              href={`/koksmat/tenants/${tenant}/site/${site}/journey`}>Open Journey </Link></MenubarItem>
+    
+          </MenubarContent>
+        </MenubarMenu>
         <MenubarMenu >
           <MenubarTrigger>Sites</MenubarTrigger>
           <MenubarContent>
@@ -167,12 +176,12 @@ export function NavigationMenuKoksmat(): JSX.Element {
         </MenubarMenu>
 
         <MenubarMenu>
-          <MenubarTrigger>Recipies</MenubarTrigger>
+          <MenubarTrigger>Recipes</MenubarTrigger>
           <MenubarContent>
-            <MenubarItem disabled> New Recipies</MenubarItem>
+            <MenubarItem disabled> New Recipe</MenubarItem>
             <MenubarItem disabled>   <Link
-              href={`/koksmat/tenants/${tenant}/site/${site}/kitchen`}>Open Recipies </Link></MenubarItem>
-            <MenubarItem disabled>Delete Recipies</MenubarItem>
+              href={`/koksmat/tenants/${tenant}/site/${site}/kitchen`}>Open Recipe </Link></MenubarItem>
+            <MenubarItem disabled>Delete Recipes</MenubarItem>
        
           </MenubarContent>
         </MenubarMenu>

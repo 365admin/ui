@@ -1,4 +1,5 @@
 "use client"
+
 import { ReactElement, useContext, useState } from "react"
 
 import { NavigationContext } from "@/app/koksmat/navigator/context"
@@ -24,6 +25,7 @@ export default function PortDefaults(props: {
   waypoint?: Waypoint
   children?: ReactElement
 }) {
+  const navigator = useContext(NavigationContext)
   const { children ,waypoint} = props
   const { portname, } = props.params
 
@@ -37,7 +39,7 @@ export default function PortDefaults(props: {
       {/* <div>{waypoint?.loads.containers.length ?? 0} Containers to load</div> */}
       <NavigationMenu>
       <NavigationMenuList>
-        <NavigationMenuItem>
+        {/* <NavigationMenuItem>
           <NavigationMenuTrigger>Getting started</NavigationMenuTrigger>
           <NavigationMenuContent>
             <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
@@ -69,17 +71,17 @@ export default function PortDefaults(props: {
               </ListItem>
             </ul>
           </NavigationMenuContent>
-        </NavigationMenuItem>
+        </NavigationMenuItem> */}
         <NavigationMenuItem>
           <NavigationMenuTrigger>Components</NavigationMenuTrigger>
           <NavigationMenuContent>
             <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
 
-              {waypoint.loads.containers.map((component) => (
+              {waypoint?.loads?.containers.map((component) => (
                 <ListItem
                   key={component.key}
                   title={component.name}
-                  href={containerHref("/nav/cava/", portname, component.name,"")}
+                  href={containerHref(navigator.rootPath, portname, component.name,"")}
                 >
                   {component.who.join(", ")}
                 </ListItem>
@@ -111,11 +113,12 @@ export default function PortDefaults(props: {
 const ListItem = React.forwardRef<
   React.ElementRef<"a">,
   React.ComponentPropsWithoutRef<"a">
->(({ className, title, children, ...props }, ref) => {
+>(({ className, title, children, href,...props }, ref) => {
   return (
     <li>
       <NavigationMenuLink asChild>
-        <a
+        <Link href={href ?? ""}>
+        <span
           ref={ref}
           className={cn(
             "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
@@ -127,7 +130,8 @@ const ListItem = React.forwardRef<
           <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
             {children}
           </p>
-        </a>
+        </span>
+        </Link>
       </NavigationMenuLink>
     </li>
   )

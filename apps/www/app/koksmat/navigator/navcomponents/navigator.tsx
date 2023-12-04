@@ -33,7 +33,7 @@ function getRightBarNavItems(
   const wp = waypoints.find((wp) => getSlugElement( wp.port) === port)
   if (!wp) return []
 
-  return wp.loads.containers.map((container) => {
+  return wp?.loads?.containers.map((container) => {
     return {
       title: container?.name,
       href: containerHref(rootPath, port, container.name,id),
@@ -63,15 +63,22 @@ export default function Navigator(props: {
   params: { journey: string; slug: string[] }
   travelplan: JourneyProps
 }) {
+  const { rootPath } = props
   const navigator = useContext(NavigationContext)
-  const { travelplan, rootPath } = props
+  useEffect(() => {
+    navigator.setRootPath(rootPath)
+  
+  
+  }, [navigator, rootPath])
+  
+  const { travelplan } = props
   const { journey, slug } = props.params
   const { id } = navigator.position
 
 
   return (
     <div className="flex">
-      <div className="sticky top-[64px] mt-4 w-[300px] border-r pr-2">
+      <div className="sticky top-[64px] mt-4 w-[200px] border-r pr-2">
         {/* <div>{travelplan.metadata.name}</div> */}
         <PortMap
           currentPath={rootPath + "/port/" + navigator.position.port}
@@ -83,7 +90,7 @@ export default function Navigator(props: {
           )}
         />
       </div>
-      <div className="container flex">
+      <div className=" flex grow">
         <div className="grow">
          
           <JourneyView
@@ -107,7 +114,7 @@ export default function Navigator(props: {
           })}
         </div></div>
       </div>
-       <div className="ml-4 mt-4 w-[300px] border-l">
+       <div className="ml-4 mt-4 w-[200px] border-l">
         <RightbarNav
           items={getRightBarNavItems(
             rootPath,

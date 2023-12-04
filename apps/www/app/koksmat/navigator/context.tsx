@@ -41,6 +41,10 @@ export type NavigationContextProps = {
   waypoints: Waypoint[]
   shippingMan : ShippingMan
   setInstanceId: (instanceId: string) => void 
+  cargoMetadata: (key:string) =>  string[] 
+  rootPath:string
+  setRootPath: (rootPath: string) => void
+  
 }
 export const NavigationContext = createContext<NavigationContextProps>({
   ship: function (tag: string, data: string): void {
@@ -91,6 +95,13 @@ export const NavigationContext = createContext<NavigationContextProps>({
     throw new Error("Function not implemented.")
   },
   cargo: function (key: string): string | undefined {
+    throw new Error("Function not implemented.")
+  },
+  cargoMetadata: function (key: string) {
+    throw new Error("Function not implemented.")
+  },
+  rootPath: "",
+  setRootPath: function (rootPath: string): void {
     throw new Error("Function not implemented.")
   }
 })

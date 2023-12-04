@@ -26,8 +26,12 @@ interface CaseProps {
 }
 
 const configuration: Configuration = {
+  cache: {
+    cacheMigrationEnabled:false,
+  },
   auth: {
     clientId: "c56dd27d-20a6-41de-a0f9-7c955cb5194f",
+    
     authority:
       "https://login.microsoftonline.com/79dc228f-c8f2-4016-8bf0-b990b6c72e98",
     redirectUri: "/nav",
@@ -131,6 +135,7 @@ export const SecurityContextProvider = ({ children }: Props) => {
       return tokenResult
     },
     signIn: function (): void {
+      debugger
       instance.loginRedirect()
     },
     signOut: function (): void {

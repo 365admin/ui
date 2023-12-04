@@ -1,16 +1,17 @@
 import * as yaml from "js-yaml"
 
-import travelplan from "./cava.waypoints.json"
+//import travelplan from "./cava.waypoints.json"
 import { Root as Journey } from "../../../../navcomponents/journey-schema"
 
-export default travelplan as Journey
+//export default travelplan as Journey
 
 export interface CargoType {
   name: string
+  nameWithStage: string
   description?: string
   stages: string[]
-  isList: boolean
-  attributes?: string[]
+
+  attributes: string[]
 }
 
 export interface RoleType {
@@ -30,7 +31,7 @@ function roleTypeFromTag(tag: string): RoleType {
 function roleTypes(journey: Journey): RoleType[] {
   const map = new Map<string, RoleType>()
   journey.waypoints.map((waypoint) => {
-    waypoint.loads.containers.map((container) => {
+    waypoint?.loads?.containers.map((container) => {
       container.who.map((name) => {
         const role = roleTypeFromTag(name)
         const roleKey = role.name
@@ -49,27 +50,34 @@ function roleTypes(journey: Journey): RoleType[] {
   })
   return Array.from(map.values())
 }
+
+
+function nameFromElement(element: string): string {
+  return element.endsWith("s") ? element.trim().slice(0, -1) : element.trim()
+}
 /**
  * 
  * @param tag resources-requirements:0
  * @returns 
  */
-function cargoTypeFromTag(tag: string): CargoType {
-  const s = tag.split(":")
-  const s2 = s[0].split("-")
-  const n = s2[0]
-  let stage = s2[1] ?? ""
-  const stageSplit =  stage.split(" ").filter(s => s.length > 0)
-  const cargoType : CargoType = { name:n.trim(), stages: [], isList: n.trim().endsWith("s") ,attributes:[]}
+export function cargoTypeFromTag(tag: string): CargoType {
+  const elements = tag.split(" ").filter((s) => " " !== s)
+  const nameWithStage = elements[0]
+  const nameSplit = nameFromElement(elements[0]).split("-")
+  const name = nameSplit[0].endsWith("s") ? nameSplit[0].slice(0, -1) : nameSplit[0]
+  const stage = nameSplit[1] ?? ""
 
-  if (stageSplit.length > 0) {
-    cargoType.stages.push(stageSplit[0])
-  }else{
-    cargoType.stages.push("")
+  elements.splice(0, 1)
+
+
+
+  
+
+  const cargoType : CargoType = { name,nameWithStage, stages: [], attributes:["id","name",...elements]}
+  if (stage){
+    cargoType.stages.push(stage)
   }
-if (stageSplit.length > 1){
-    cargoType.attributes = stageSplit.slice(1)
-}
+ 
 
   return cargoType
 }
@@ -85,17 +93,24 @@ function cargoTypes(journey: Journey): CargoType[] {
           (stage) => (!existingCargoType.stages.includes(stage)) && stage !== ""
         )
         existingCargoType.stages.push(...newStages)
+        if (cargoType.attributes){
+          cargoType.attributes.forEach((attribute)=>{
+            if (!existingCargoType.attributes.includes(attribute)){
+              existingCargoType.attributes.push(attribute)
+            }
+          })
+        }
       }
     } else {
       map.set(cargoType.name, cargoType)
     }
   }
   journey.waypoints.map((waypoint) => {
-    waypoint.loads.containers.map((container) => {
-      container.needs.map((artifact) => {
+    waypoint?.loads?.containers.map((container) => {
+      container?.needs?.map((artifact) => {
         process(artifact)
       })
-      container.produces.map((artifact) => {
+      container?.produces?.map((artifact) => {
         process(artifact)
       })
     })
@@ -125,6 +140,12 @@ export class CargoHold {
 
   public set(key: string, value: string): void {
     this._bag.set(key, value)
+  }
+
+  public cargoAtributes(cargoName:string): string[] {
+    
+    const cargoType = this._cargoTypes.find((cargoType) => cargoType.name === cargoName.split("-")[0])
+    return cargoType?.attributes ?? []
   }
 
   public get cargoTypes(): CargoType[] {
