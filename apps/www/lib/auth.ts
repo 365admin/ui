@@ -243,7 +243,7 @@ const getOptions = (): NextAuthOptions => {
         },
         authorization: {
           params: {
-            scope: "openid offline_access Directory.Read.All People.Read User.Read Sites.ReadWrite.All Directory.Read.All Calendars.ReadWrite",
+            scope: "openid offline_access User.Read ",
           },
         }
       }),

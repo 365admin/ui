@@ -1,5 +1,5 @@
 export const siteConfig = {
-  name: "intra/profile",
+  name: "Getting started",
 
   root: "/profile",
 

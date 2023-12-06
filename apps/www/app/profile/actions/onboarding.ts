@@ -195,7 +195,7 @@ export interface ValidGuestDomainFields {
 
 export async function getValidGuestDomains(accessToken: string) {
     const items = await https<Root<ItemHeader<ValidGuestDomainFields>>>(accessToken, "GET",
-        `https://graph.microsoft.com/v1.0/sites/christianiabpos.sharepoint.com:/sites/nexiintra-home:/lists/Valid Guest Domains/items?$expand=fields`);
+        `https://graph.microsoft.com/v1.0/sites/365adm.sharepoint.com:/sites/365admin:/lists/Valid Guest Domains/items?$expand=fields`);
     const guestDomains = items.data?.value.map((item) => {
         const { fields } = item;
 

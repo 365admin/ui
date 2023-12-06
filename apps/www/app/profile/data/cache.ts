@@ -67,24 +67,24 @@ export async function getProfileCache() {
     .collection<ProfileCache>("cache")
     .findOne({ key: KEY })
 
-  if (cache) {
-    const now = new Date()
-    const diff = now.getTime() - cache.date.getTime()
-    const diffInMinutes = Math.round(diff / 60000)
-    if (diffInMinutes > 1) {
-      await refreshProfileCache()
-      cache = await client
-        .db(process.env.DATABASE)
-        .collection<ProfileCache>("cache")
-        .findOne({ key: KEY })
-    }
-  }else{
-    await refreshProfileCache()
-    cache = await client
-      .db(process.env.DATABASE)
-      .collection<ProfileCache>("cache")
-      .findOne({ key: KEY })
-  }
+  // if (cache) {
+  //   const now = new Date()
+  //   const diff = now.getTime() - cache.date.getTime()
+  //   const diffInMinutes = Math.round(diff / 60000)
+  //   if (diffInMinutes > 1) {
+  //     await refreshProfileCache()
+  //     cache = await client
+  //       .db(process.env.DATABASE)
+  //       .collection<ProfileCache>("cache")
+  //       .findOne({ key: KEY })
+  //   }
+  // }else{
+  //   await refreshProfileCache()
+  //   cache = await client
+  //     .db(process.env.DATABASE)
+  //     .collection<ProfileCache>("cache")
+  //     .findOne({ key: KEY })
+  // }
 
   await client.close()
   return cache

@@ -6,9 +6,9 @@ import "./home-animations.css"
 import { use } from "react"
 import { redirect } from "next/navigation";
 import { getCookie } from "./profile/actions/getCookies"
-import { NexiWelcomePage } from "@/components/welcomepages/nexi-welcomepage"
+import { WelcomePage } from "@/components/welcomepages/welcomepage"
 
-export default function WelcomePage(){
+export default function HomePage(){
   
 switch (process.env.HOMEPAGE ??"") {
   case "koksmat":
@@ -17,7 +17,7 @@ switch (process.env.HOMEPAGE ??"") {
     break;
 
   default:
-    return <NexiWelcomePage />
+    return <WelcomePage />
     break;
 }
 return null
