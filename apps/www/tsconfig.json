@@ -20,6 +20,8 @@
     "paths": {
       "@/*": ["./*"],
       "@/components/ui/*": ["./registry/new-york/ui/*"],
+      "@/components/*": ["./components/*"],
+      "@/navigator/*": ["./app/koksmat/navigator/*"],
       "contentlayer/generated": ["./.contentlayer/generated"],
       "react": [ "./node_modules/@types/react" ]
     },
@@ -36,6 +38,6 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     ".contentlayer/generated"
-  ],
+, "app/koksmat/components/AzContext.tsa"  ],
   "exclude": ["node_modules", "./scripts/build-registry.ts"]
 }

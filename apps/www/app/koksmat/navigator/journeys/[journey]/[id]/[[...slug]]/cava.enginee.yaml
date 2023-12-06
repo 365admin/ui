@@ -1,0 +1,90 @@
+enginee: v1
+metadata:
+  app: cava
+  name: Meeting IT Services
+entities:
+
+- name: meetingPurpose
+  stages:
+  - ''
+  isList: false
+- name: agenda
+  stages:
+  - suggestion
+  - suggestion title description durationInMinutes presenter attendees
+  - agreed
+  - ''
+  isList: false
+- name: time
+  stages:
+  - suggestion
+  - suggestion day
+  - agreed
+  - ''
+  isList: false
+- name: place
+  stages:
+  - suggestion
+  - suggestion site building
+  - agreed
+  - ''
+  isList: false
+- name: attendees
+  stages:
+  - proposed email role
+  - ''
+  isList: true
+- name: attendee
+  stages:
+  - list
+  isList: false
+- name: resources
+  stages:
+  - requirements
+  - suggestion
+  - booking
+  - booking
+  isList: true
+- name: resource
+  stages:
+  - requirements
+  - booking
+  isList: false
+- name: organizer
+  stages:
+  - ''
+  isList: false
+- name: invitation
+  stages:
+  - ''
+  isList: false
+- name: rsvp
+  stages:
+  - ''
+  - ''
+  - ''
+  - ''
+  isList: false
+- name: rsvps
+  stages:
+  - ''
+  isList: true
+- name: attendeestatues
+  stages:
+  - ''
+  isList: true
+- name: serviceorder
+  stages:
+  - request
+  - approved
+  - ''
+  isList: false
+- name: invoice
+  stages:
+  - suggestion
+  - ''
+  isList: false
+- name: payment
+  stages:
+  - ''
+  isList: false

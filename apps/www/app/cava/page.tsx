@@ -1,143 +1,119 @@
 "use client"
 
 import { useContext, useEffect, useState } from "react"
-import * as React from "react"
-import Image from "next/image"
-import Link from "next/link"
-
-import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-
 import { MagicboxContext } from "../magicbox-context"
-import { CavaContext } from "./cavacontext"
-import { getCavaOrders } from "./data"
-import { roles } from "./data/roles"
+import { https, httpsGetAll } from "@/lib/httphelper"
+import { set } from "date-fns"
+import Link from "next/link"
+import { Button } from "@/registry/new-york/ui/button"
+export type Root = Root2[]
+
+export interface Root2 {
+  "@odata.etag": string
+  createdDateTime: string
+  eTag: string
+  id: string
+  lastModifiedDateTime: string
+  webUrl: string
+  createdBy: CreatedBy
+  lastModifiedBy: LastModifiedBy
+  parentReference: ParentReference
+  contentType: ContentType
+  "fields@odata.context": string
+  fields: Fields
+}
+
+export interface CreatedBy {
+  user: User
+}
+
+export interface User {
+  email: string
+  id: string
+  displayName: string
+}
+
+export interface LastModifiedBy {
+  user: User2
+}
+
+export interface User2 {
+  email: string
+  id: string
+  displayName: string
+}
+
+export interface ParentReference {
+  id: string
+  siteId: string
+}
+
+export interface ContentType {
+  id: string
+  name: string
+}
+
+export interface Fields {
+  "@odata.etag": string
+  Title: string
+  LinkTitle: string
+  Modulename: string
+  SiteName: string
+  id: string
+  ContentType: string
+  Modified: string
+  Created: string
+  AuthorLookupId: string
+  EditorLookupId: string
+  _UIVersionString: string
+  Attachments: boolean
+  Edit: string
+  LinkTitleNoMenu: string
+  ItemChildCount: string
+  FolderChildCount: string
+  _ComplianceFlags: string
+  _ComplianceTag: string
+  _ComplianceTagWrittenTime: string
+  _ComplianceTagUserId: string
+}
 
 export default function Cava() {
-  const cava = useContext(CavaContext)
+const magicbox = useContext(MagicboxContext)
+const [instances, setinstances] = useState<Root2[]>([])
+const [error, seterror] = useState("")
+useEffect(() => {
+  const load = async () => {
+    if (!magicbox.session?.accessToken){
+        return
+    }
 
-  return (
-    <div className="minh-screen w-full">
-      <div className="container ">
-        <div className="flex flex-wrap">
-          {roles
-            .filter((r) => r.type === "service")
-            .map((service) => {
-              return (
-                <Card className="m-5 w-[350px]" key={service.key}>
-                  <CardHeader>
-                    <CardTitle>{service.name}</CardTitle>
-                    <CardDescription className="h-[40px]">
-                      {service.description}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="center">
-                    <Image
-                      src={service.image}
-                      width={500}
-                      height={500}
-                      alt={service.name}
-                      className="rounded-md"
-                    />
-                  </CardContent>
-                  <CardFooter className="flex justify-between">
-                    <div className="grow"></div>
-                    <Button disabled={service.version === "draft"}>
-                      <Link href={service.link}>
-                        {service.linkname ?? "Start"}
-                      </Link>
-                    </Button>
-                  </CardFooter>
-                </Card>
-              )
-            })}
-        </div>
-        <h2 className={"my-3 text-2xl font-bold leading-none tracking-tight"}>
-          Meeting Participant Roles
-        </h2>
-        <div className="flex flex-wrap">
-          {roles
-            .filter((r) => r.type === "core")
-            .map((role) => {
-              return (
-                <Card className="m-5 w-[350px]" key={role.key}>
-                  <CardHeader>
-                    <CardTitle>{role.name}</CardTitle>
-                    <CardDescription className="h-[40px]">
-                      {role.description}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="center">
-                    <Image
-                      src={role.image}
-                      width={500}
-                      height={500}
-                      alt={role.name}
-                      className="rounded-md"
-                    />
-                  </CardContent>
-                  <CardFooter className="flex justify-between">
-                    <div className="grow"></div>
-                    <Button disabled={role.version === "draft"}>
-                      <Link href={role.link}>{role.name} role</Link>
-                    </Button>
-                  </CardFooter>
-                </Card>
-              )
-            })}
-        </div>
 
-        <h2 className={"my-3 text-2xl font-bold leading-none tracking-tight"}>
-          Supporting Roles
-        </h2>
-        <div className="flex flex-wrap">
-          {roles
-            .filter((r) => r.type === "supporting")
-            .map((role) => {
-              return (
-                <Card className="m-5 w-[250px]" key={role.key}>
-                  <CardHeader>
-                    <CardTitle>{role.name}</CardTitle>
-                    <CardDescription className="h-[40px]">
-                      {role.description}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Image
-                      src={role.image}
-                      width={500}
-                      height={500}
-                      alt={role.name}
-                      className="rounded-md"
-                    />
-                  </CardContent>
-                  <CardFooter className="flex justify-between">
-                    <div className="grow"></div>
-                    <Button disabled={role.version === "draft"}>
-                      <Link href={role.link}>{role.name} role</Link>
-                    </Button>
-                  </CardFooter>
-                </Card>
-              )
-            })}
-        </div>
-      </div>
+    const getResponse = await httpsGetAll<Root2>(magicbox.session?.accessToken,  `https://graph.microsoft.com/v1.0/sites/christianiabpos.sharepoint.com:/sites/intra365:/lists/Instances/items?$expand=fields`)
+ 
+    if(getResponse.hasError){
+        seterror(getResponse.errorMessage??"Unknown error")
+        return
+    }
+setinstances( getResponse.data ?? [])
+
+}
+  load()
+
+}, [magicbox.session?.accessToken])
+
+return (
+<div className="container h-screen">
+    {error && <div className="text-red-600">{error}</div>}
+    <div className="text-xl">Instances</div>
+    <div>
+        {instances.map((instance) => {
+            return <div key={instance.id}>
+                <Link href={`/cava/${instance.fields.SiteName}`}><Button variant={"link"}> {instance.fields.Title}</Button></Link>
+                </div>
+        })}
     </div>
-  )
+</div>
+
+)
+
 }

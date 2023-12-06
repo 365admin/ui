@@ -1,5 +1,5 @@
 "use client";
-import { CavaContext } from "@/app/cava/cavacontext";
+import { CavaContext } from "@/app/cava/[site]/cavacontext";
 import {
   Avatar,
   AvatarFallback,

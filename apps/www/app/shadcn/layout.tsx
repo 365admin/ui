@@ -5,6 +5,8 @@ import { siteConfig } from "@/config/site"
 
 import { SiteFooter } from "@/components/magicbox-site-footer"
 import { SiteHeader } from "@/components/sandbox-site-header"
+import { KoksmatToolBar } from "../koksmat/tenants/[tenant]/site/[site]/components/toolbar"
+import { MagicBar } from "../magicbox/components/tools"
 
 
 export const metadata: Metadata = {
@@ -68,10 +70,33 @@ interface RootLayoutProps {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
+
     <div className="relative flex min-h-screen flex-col">
-      <SiteHeader />
-      <div className="flex-1">{children}</div>
+     
+      <div className="flex">
+      <div className="mr-4 hidden md:flex">
+        <div className=" w-[64px] border-r border-gray-400">
+          <div className="sticky top-[64px]">
+            <MagicBar toolbarId={1}/>
+          </div>
+        </div>
+      </div>
+        <div className="grow" >
+        <SiteHeader />
+          <div className="flex-1">{children}</div>
+
+
+        </div>
+      </div>
       <SiteFooter />
+
+
+
+      <div>
+
+
+
+      </div>
     </div>
   )
 }

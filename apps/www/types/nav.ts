@@ -5,6 +5,7 @@ export interface NavItem {
   href?: string
   disabled?: boolean
   external?: boolean
+  checked?: boolean
   icon?: keyof typeof Icons
   label?: string
 }

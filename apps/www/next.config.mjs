@@ -1,5 +1,6 @@
 import { createContentlayerPlugin } from "next-contentlayer"
 
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   
@@ -8,7 +9,7 @@ const nextConfig = {
     
   },
   productionBrowserSourceMaps: true,
-  reactStrictMode: true,
+  reactStrictMode: false,
   swcMinify: true,
   images: {
     remotePatterns: [
@@ -20,9 +21,7 @@ const nextConfig = {
       },
   ],
   },
-  experimental : {  
-    serverActions: true,
-  },
+
   redirects() {
     return [
       {

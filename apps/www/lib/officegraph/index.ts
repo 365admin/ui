@@ -822,9 +822,9 @@ export const getAllSharePointPage = (accessToken: string, sharePointSiteId: stri
 //     })
 // }
 
-// interface Fields {
-//     fields: any
-// }
+ interface Fields {
+     fields: any
+ }
 // /**
 //  * 
 //  * @param app 
@@ -954,32 +954,33 @@ export const getAllSharePointPage = (accessToken: string, sharePointSiteId: stri
 
 
 
-// export const updateItem = (accessToken: string, sharePointSiteId: string, listName: string, id: string, body: Fields): Promise<Result<any>> => {
+export const updateItem = (accessToken: string,  sitename: string, listName: string, id: string, body: Fields): Promise<Result<any>> => {
 
-//     return new Promise(async (resolve, reject) => {
-//         var url = `https://graph.microsoft.com/v1.0/sites/${sharePointSiteId}/lists/${listName}/items/${id}`
-//         var result = await https<any>(accessToken, "PATCH", url, body)
-//         resolve(result)
-//     })
-// };
+    return new Promise(async (resolve, reject) => {
+        var url = `https://graph.microsoft.com/v1.0/sites/${process.env.SPAUTH_TENANTNAME}.sharepoint.com:/sites/${sitename}:/lists/${listName}/items/${id}`
+        console.log(url,body)
+        var result = await https<any>(accessToken, "PATCH", url, body)
+        resolve(result)
+    })
+};
 
-// export const addItem = function (accessToken: string, sharePointSiteId: string, listName: string, body: Fields): Promise<Result<any>> {
+export const addItem = function (accessToken: string, sharePointSiteId: string, listName: string, body: Fields): Promise<Result<any>> {
 
-//     return new Promise(async (resolve, reject) => {
-//         var url = `https://graph.microsoft.com/v1.0/sites/${sharePointSiteId}/lists/${listName}/items`
-//         var result = await https<any>(accessToken, "POST", url, body)
-//         resolve(result)
-//     })
-// };
+    return new Promise(async (resolve, reject) => {
+        var url = `https://graph.microsoft.com/v1.0/sites/${sharePointSiteId}/lists/${listName}/items`
+        var result = await https<any>(accessToken, "POST", url, body)
+        resolve(result)
+    })
+};
 
-// export const deleteItem = function (accessToken: string, sharePointSiteId: string, listName: string, id: string): Promise<Result<any>> {
+export const deleteItem = function (accessToken: string, sharePointSiteId: string, listName: string, id: string): Promise<Result<any>> {
 
-//     return new Promise(async (resolve, reject) => {
-//         var url = `https://graph.microsoft.com/v1.0/sites/${sharePointSiteId}/lists/${listName}/items/${id}`
-//         var result = await https<any>(accessToken, "DELETE", url)
-//         resolve(result)
-//     })
-// };
+    return new Promise(async (resolve, reject) => {
+        var url = `https://graph.microsoft.com/v1.0/sites/${sharePointSiteId}/lists/${listName}/items/${id}`
+        var result = await https<any>(accessToken, "DELETE", url)
+        resolve(result)
+    })
+};
 
 
 

@@ -18,6 +18,7 @@ export interface IProgressProps {
   done:boolean,
   title: string
   description: string
+  hideProgress?: boolean
 }
 
 
@@ -40,7 +41,8 @@ export function ProcessStatusOverlay(props: IProgressProps) {
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
-          <Progress value={props.progress} />
+            {!props.hideProgress &&           <Progress value={props.progress} />}
+
             
           </div>
      

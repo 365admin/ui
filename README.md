@@ -1,4 +1,15 @@
-# magicbox/ui
-> Make killer apps by decompositioning Microsoft 365 and other digital services and build Magical bite size dishes
+# Welcome to Koksmat
 
-<https://learn.koksmat.com/docs/koksmat/ui/>
+
+The `Bridge` is a web interface that supports you and your guest on the journey through a great digital menu of taste full digital dishes. 
+
+[Bridge](http://localhost:3001) 
+
+![](2023-11-22-07-23-32.png)
+
+
+We suggest that you start by connecting to the 
+
+![](2023-11-22-07-27-39.png)
+
+

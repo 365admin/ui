@@ -17,9 +17,19 @@ export interface User {
 export type  MagicboxContextType= {
   session?:Session,
   version:number,
-  refresh:()=>void
-
+  tenant:string,
+  refresh:()=>void,
+  root:string
+  kitchenroot:string
+  setPaths:(root:string,kitchen:string)=>void
 }
-export const MagicboxContext = createContext<MagicboxContextType>({session:{user:{name:"",email:"",image:""},expires:"",roles:[],accessToken:""}, version:0, refresh:()=>{}});
+export const MagicboxContext = createContext<MagicboxContextType>({
+  session: { user: { name: "", email: "", image: "" }, expires: "", roles: [], accessToken: "" }, version: 0, refresh: () => { },
+  tenant: "",
+  root: "",
+  kitchenroot: "",
+  setPaths: (root: string, kitchen: string) => { }
+
+}); 
 
 

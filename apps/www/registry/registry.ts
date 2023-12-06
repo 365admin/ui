@@ -226,6 +226,12 @@ const ui: Registry = [
     dependencies: ["@radix-ui/react-tooltip"],
     files: ["ui/tooltip.tsx"],
   },
+  {
+    name: "toolbar",
+    type: "components:ui",
+    dependencies: [],
+    files: ["ui/tooltip.tsx"],
+  },
 ]
 
 const example: Registry = [

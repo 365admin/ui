@@ -1,0 +1,1 @@
+npx js-yaml  "$PSScriptRoot/cava.yaml" > cava.json #"$PSScriptRoot/cava.json"

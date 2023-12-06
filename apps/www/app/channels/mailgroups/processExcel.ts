@@ -1,71 +1,355 @@
 export const TODO = true
-// import Excel from "exceljs";
-// import { parseSheet,parseInfocast } from 'helpers/excel/parser';
-// import { getPipelineDefinition, PipelineDefinition } from 'domain/pipeline';
-// import { https, Result } from 'helpers';
+import Excel from "exceljs";
 
-// export function processInfocast(workbook: Excel.Workbook): Promise<Result<any>> {
-//   return new Promise(async (resolve, reject) => {
+import crypto from "crypto"
 
-//     var sheets = [];
-//     workbook.worksheets.forEach(ws => sheets.push(ws.name));
+import { Result } from "@/lib/httphelper";
+ 
 
-//     if (sheets.length !== 1) {
+/*
+Version 0.2 - PoC
+*/
+const version = "0.2.Blob"
 
-//       resolve({ hasError: true, errorMessage: "Only one Sheet supported pr file" });
 
-//       return;
-//     }
+function hash(s:string){
+    var shasum = crypto.createHash('sha1')
+  shasum.update(s)
+  return shasum.digest('hex') // => "0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33"
+  }
+  
+function parseSheet(sheet : Excel.Worksheet) {
 
-//     var ws: Excel.Worksheet = workbook.worksheets[0];
-//     var row: Excel.Row = ws.getRow(1);
-//     var columns = [];
+    function isManager(row : Excel.Row) {
+        var I = row.getCell("I")
+        var M = row.getCell("M")
 
-    
-//     var onSheetLoaded = await parseInfocast(ws);
-//     row.eachCell(cell => columns.push(cell.value));
-//     resolve({ hasError: false, data: { sheets, columns, results: { onSheetLoaded } } });
+        if (M.value) {
 
-//   });
+            return true
+        }
+        if (I.value === "Employee") {
+            return false
+        }
+        return true
 
-// }
+    }
+    function mapToKeyValues(map:Map<any,any>,tag = "",suffix = " [Nets]") {
+        var result : any[] = []
+        Array.from(map.keys()).forEach((keyValue) => {
+      
+            
+            var key = keyValue + suffix
+            var keyHash = tag + "-"+  hash(keyValue)
+            result.push({ key, keyHash, values: map.get(keyValue) })
 
-// export function processExcel(workbook: Excel.Workbook): Promise<Result<any>> {
-//   return new Promise(async (resolve, reject) => {
+        })
 
-//     var sheets = [];
-//     workbook.worksheets.forEach(ws => sheets.push(ws.name));
+        return result.sort((a, b) => {
 
-//     if (sheets.length !== 1) {
+            if (a.key < b.key) {
+                return -1;
+            }
+            if (a.key > b.key) {
+                return 1;
+            }
+            return 0;
 
-//       resolve({ hasError: true, errorMessage: "Only one Sheet supported pr file" });
+        })
+    }
+    function uniqueColumns(column : string, managersOnly:boolean, prefix:string,tag:string,suffix:string) {
+        var map = new Map()
+        var values = []
+        var map = new Map()
 
-//       return;
-//     }
+        sheet.eachRow(function (row, rowNumber) {
+            if (rowNumber < 2) return
+            if (managersOnly && !isManager(row)) return
+            var value = row.getCell(column).value
+            if (!value) return
+            // if (value.indexOf("object")>-1){
+            //     debugger
 
-//     var ws: Excel.Worksheet = workbook.worksheets[0];
-//     var row: Excel.Row = ws.getRow(1);
-//     var columns = [];
+            // }
 
-//      //await getPipelineDefinition("1");
+            value = prefix + value
+            if (map.has(value)) {
 
-//     var requestCode  = await https<string>(null,"GET","https://nexiintra365.blob.core.windows.net/transformers/nets-mail-groups.js?sp=r&st=2022-08-22T09:37:48Z&se=2099-08-22T17:37:48Z&spr=https&sv=2021-06-08&sr=b&sig=ptTWYJ29FEHLAvR97bnUtdv%2BD4OOKAE5ux%2B4K7iNL9U%3D")
-//     var pipeline : PipelineDefinition = {
-//       id: "",
-//       title: "",
-//       onLoaded: requestCode.data ,
-//       prefix: "",
-//       slug: ""
-//     }
-//     if (requestCode.hasError) {
-//       resolve({ hasError: true, errorMessage: "Pipeline not found" });
+                map.get(value).push(row.getCell("C").value)
+            } else {
+                map.set(value, [row.getCell("C").value])
+            }
+            values.push(value)
+        });
+        return mapToKeyValues(map,tag,suffix)
 
-//       return;
-//     }
-//     var onSheetLoaded = await parseSheet(ws, pipeline);
-//     row.eachCell(cell => columns.push(cell.value));
-//     resolve({ hasError: false, data: { sheets, columns, results: { onSheetLoaded } } });
+    }
 
-//   });
+    function L2L3(managersOnly:boolean, prefix:string,tag:string,suffix:string) {
+        var values = []
+        var map = new Map()
 
-// }
+        sheet.eachRow(function (row : any, rowNumber) {
+            if (rowNumber < 2) return
+            if (managersOnly && !isManager(row)) return
+            var L = row.getCell("L")
+            var J = row.getCell("J")
+
+            var l3 = row.getCell("L").value.result ? row.getCell("L").value.result : row.getCell("L").value
+            var l2 = row.getCell("J").value//ToString()
+            if (l3 === "X") return
+            if (l3.error) return
+            if (l2.error) return
+            if (l3 === "[object Object]") {
+                return
+            }
+            var value = prefix + l3 + " (" + l2 + ")"
+            if (value.indexOf("object") > -1) {
+        
+                return
+            }
+
+            if (map.has(value)) {
+                map.get(value).push(row.getCell("C").value)
+            } else {
+                map.set(value, [row.getCell("C").value])
+            }
+            values.push(value)
+        });
+        return mapToKeyValues(map,tag,suffix)
+        //var uniqueValues = new Set(values)
+        //return [...uniqueValues]
+
+    }
+    function ManagerCountry(prefix:string,tag:string,suffix:string) {
+        var values = []
+        var map = new Map()
+
+        sheet.eachRow(function (row, rowNumber) {
+            if (rowNumber < 2) return
+
+
+
+            var manager = row.getCell("H").value
+            var country = row.getCell("E").value//ToString()
+
+            var value = prefix + " " + manager + " in " + country
+
+
+            if (map.has(value)) {
+                map.get(value).push(row.getCell("C").value)
+            } else {
+                map.set(value, [row.getCell("C").value])
+            }
+            values.push(value)
+        });
+        return mapToKeyValues(map,tag,suffix)
+        //var uniqueValues = new Set(values)
+        //return [...uniqueValues]
+
+    }
+    function L3Country(prefix:string,tag:string,suffix:string) {
+        var values = []
+        var map = new Map()
+
+        sheet.eachRow(function (row : any, rowNumber) {
+            if (rowNumber < 2) return
+
+
+
+            
+            var l3 = row.getCell("L").value.result ? row.getCell("L").value.result : row.getCell("L").value
+            var l2 = row.getCell("J").value//ToString()
+            if (l2.error) return
+            if (l3 === "X") return
+            if (l3.error) return
+            
+            if (l3 === "[object Object]") {
+                debugger
+            }
+            var country = row.getCell("E").value//ToString()
+
+            var value = prefix + " " + l3 + " (" + l2 + ") in " + country
+
+
+            if (map.has(value)) {
+                map.get(value).push(row.getCell("C").value)
+            } else {
+                map.set(value, [row.getCell("C").value])
+            }
+            values.push(value)
+        });
+        return mapToKeyValues(map,tag,suffix)
+        //var uniqueValues = new Set(values)
+        //return [...uniqueValues]
+
+    }
+
+    function locations(managersOnly:boolean, prefix:string,tag:string,suffix:string) {
+        var values = []
+        var map = new Map()
+        sheet.eachRow(function (row, rowNumber) {
+            if (rowNumber < 2) return
+            if (managersOnly && !isManager(row)) return
+            var K = row.getCell("K")
+
+            var value = prefix + K.value
+
+            if (map.has(value)) {
+                map.get(value).push(row.getCell("C").value)
+            } else {
+                map.set(value, [row.getCell("C").value])
+            }
+            values.push(value)
+        });
+
+        return mapToKeyValues(map,tag,suffix)
+        //var uniqueValues = new Set(values)
+        //return [...uniqueValues]
+
+    }
+    function OrgUnits(prefix:string,tag:string,suffix:string) {
+        var values = []
+        var map = new Map()
+        sheet.eachRow(function (row, rowNumber) {
+            if (rowNumber < 2) return
+            var F = row.getCell("F")
+            var G = row.getCell("G")
+            var value = prefix + G.value + " (" + F.value + ")"
+            if (value.indexOf("object") > -1) {
+                debugger
+            }
+            if (map.has(value)) {
+                map.get(value).push(row.getCell("C").value)
+            } else {
+                map.set(value, [row.getCell("C").value])
+            }
+            values.push(value)
+        });
+
+        return mapToKeyValues(map,tag,suffix)
+        //var uniqueValues = new Set(values)
+        //return [...uniqueValues]
+
+    }
+
+
+
+    var columns : string[] = []
+
+    sheet.getRow(1).eachCell((cell : Excel.Cell) => columns.push(cell.value as string))
+
+    var segments = []
+
+    segments.push({
+        name: "Companies",
+        values: uniqueColumns("D", false, "All employees ","company"," [Nets]")
+    })
+
+    segments.push({
+        name: "Organisational Units",
+        
+        values: OrgUnits("OU ","ou"," [Nets]")
+    })
+
+    segments.push({
+        name: "Countries",
+        
+        values: uniqueColumns("E", false, "All employees ","country"," [Nets]")
+    })
+    segments.push({
+        name: "Managers only pr Country",
+        
+        values: uniqueColumns("E", true, "All managers ","country-managers"," [Nets]")
+    })
+    segments.push({
+        name: "BU/GU",
+        
+        values: uniqueColumns("J", false, "All employees ","bu"," [Nets]")
+    })
+    segments.push({
+        name: "Managers only pr BU/GU",
+        
+        values: uniqueColumns("J", true, "All managers ","bu-managers"," [Nets]")
+    })
+    segments.push({
+        name: "Locations",
+        
+        values: locations(false, "All employees at ","locations"," [Nets]")
+    })
+    segments.push({
+        name: "Managers only pr Location ",
+        
+        values: locations(true, "All managers at ","location-managers"," [Nets]")
+    })
+    segments.push({
+        name: "Level 3 Units",
+        
+        values: L2L3(false, "Level 3 All employees ","l3"," [Nets]")
+    })
+    segments.push({
+        name: "Level 3 pr Country",
+        
+        values: L3Country("Level 3 All employees","l3-country"," [Nets]")
+    })
+    segments.push({
+        name: "Level 3 Managers",
+        
+        values: L2L3(true, "Level 3 All managers","l3-managers"," [Nets]")
+    })
+
+    segments.push({
+        name: "Direct Reports to pr Country",
+        
+        values: ManagerCountry("Reporting to","reportto-country"," [Nets]")
+    })
+
+
+
+
+    return { version, columns, segments };
+
+}
+  
+  export interface Segments {
+    version: string
+    columns: string[]
+    segments: Segment[]
+  }
+  
+  export interface Segment {
+    name: string
+    values: Value[]
+  }
+  
+  export interface Value {
+    key: string
+    keyHash: string
+    values: string[]
+  }
+
+export function processExcel(workbook: Excel.Workbook): Promise<Result<Segments>> {
+  return new Promise(async (resolve, reject) => {
+
+    var sheets : Excel.Worksheet[]= [];
+    workbook.worksheets.forEach(ws => sheets.push(ws));
+
+    if (sheets.length !== 1) {
+
+      resolve({ hasError: true, errorMessage: "Only one Sheet supported pr file" });
+
+      return;
+    }
+
+    var ws: Excel.Worksheet = workbook.worksheets[0];
+    var row: Excel.Row = ws.getRow(1);
+    var columns : string[]= [];
+
+    var onSheetLoaded = await parseSheet(ws);
+    row.eachCell(cell => columns.push(cell.value as string));
+    const result : Segments = { version, columns, segments: onSheetLoaded.segments };
+    resolve({ hasError: false, data: result });
+
+  });
+
+}

@@ -27,8 +27,8 @@ export function GenericTable(params: GenericTableProps) {
   }
   return (
     <>
-      <ToSmall />
-      <div className="hidden h-full flex-1 flex-col   md:flex">
+
+      <div className=" h-full flex-1 flex-col   md:flex">
         {params.caption && (
           <div className="mb-4 flex items-center  ">
           <div className="text-2xl font-bold">{params.caption}</div>

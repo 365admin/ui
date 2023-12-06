@@ -1,7 +1,7 @@
 /* eslint-disable turbo/no-undeclared-env-vars */
 
 import React from "react"
-import { GenericTable } from "@/app/cava/components/table"
+import { GenericTable } from "@/app/cava/[site]/components/table"
 import { getToken, getRootSite, getSubSite, getAllSharePointPage } from "@/lib/officegraph"
 
 export interface Page {

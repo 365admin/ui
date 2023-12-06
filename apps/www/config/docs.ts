@@ -9,7 +9,7 @@ export const docsConfig: DocsConfig = {
   mainNav: [
     {
       title: "Documentation",
-      href: "/docs",
+      href: "/shadcn/docs",
     },
     {
       title: "Components",
@@ -40,7 +40,7 @@ export const docsConfig: DocsConfig = {
       items: [
         {
           title: "Introduction",
-          href: "/docs",
+          href: "/shadcn/docs",
           items: [],
         },
         {
@@ -89,37 +89,43 @@ export const docsConfig: DocsConfig = {
       title: "Installation",
       items: [
         {
-          title: "Next.js",
+          title: "SharePoint Extention",
           href: "/shadcn/docs/installation/next",
           items: [],
         },
         {
-          title: "Vite",
+          title: "Outlook",
           href: "/shadcn/docs/installation/vite",
           items: [],
         },
         {
-          title: "Remix",
+          title: "Teams",
           href: "/shadcn/docs/installation/remix",
           items: [],
         },
         {
-          title: "Gatsby",
+          title: "Kubernetes",
           href: "/shadcn/docs/installation/gatsby",
           items: [],
         },
         {
-          title: "Astro",
+          title: "Exchange Administration",
           href: "/shadcn/docs/installation/astro",
           items: [],
         },
         {
-          title: "Manual",
+          title: "SharePoint Administration",
+          href: "/shadcn/docs/installation/manual",
+          items: [],
+        },
+        {
+          title: "PowerApps & Automate Administration",
           href: "/shadcn/docs/installation/manual",
           items: [],
         },
       ],
     },
+   
     {
       title: "Components",
       items: [
@@ -318,6 +324,12 @@ export const docsConfig: DocsConfig = {
           href: "/shadcn/docs/components/toggle",
           items: [],
         },
+        {
+          title: "Toolbar",
+          href: "/shadcn/docs/components/magic-toolbar",
+          items: [],
+        },
+
         {
           title: "Tooltip",
           href: "/shadcn/docs/components/tooltip",

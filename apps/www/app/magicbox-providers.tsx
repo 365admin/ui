@@ -1,3 +1,4 @@
+/* eslint-disable turbo/no-undeclared-env-vars */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -21,7 +22,7 @@ const configuration: Configuration = {
             if (containsPii) {
                 return;
             }
-            debugger
+            
             switch (level) {
                 case LogLevel.Error:
                     console.error(message);
@@ -51,6 +52,8 @@ export const MagicboxProvider = ({ children }: Props) => {
   const { data, status } = useSession()
   const [session, setsession] = useState<Session>()
   const [version, setversion] = useState(0)
+  const [root, setroot] = useState("")
+  const [kitchenroot, setkitchenroot] = useState("")
 
   useEffect(() => {
     setsession(data as Session)
@@ -60,7 +63,15 @@ export const MagicboxProvider = ({ children }: Props) => {
 
   const magicbox: MagicboxContextType = {
     session, version, refresh: () => {
-      setversion(version + 1)
+      setversion(version + 1);
+    },
+    tenant: "christianiabpos",
+    root, // : process.env.KOKSMATROOT ?? "",
+    kitchenroot //: process.env.KITCHENROOT ?? "" //"/Users/nielsgregersjohansen/kitchens/" // process.env.KITCHENROOT??"" //
+    ,
+    setPaths: function (root: string, kitchen: string): void {
+      setroot(root)
+      setkitchenroot(kitchen)
     }
   }
   const pca = new PublicClientApplication(configuration);

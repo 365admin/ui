@@ -34,12 +34,16 @@ import { LegacyPageContext } from "./data/sharepoint-extention"
 import { Select } from "@/registry/new-york/ui/select"
 import { Switch } from "@/registry/new-york/ui/switch"
 import { Checkbox } from "@/registry/new-york/ui/checkbox"
+import { MagicBar } from "./components/tools"
 
 export default function RootPage() {
   const context = useContext(SharePointExtensionContext)
   const searchParams = useSearchParams()
   const [token, settoken] = useState(
     searchParams ? searchParams.get("token") : ""
+  )
+  const [showtool, setshowtool] = useState(
+    searchParams ? searchParams.get("tool") : ""
   )
   const [parentLocation, setparentLocation] = useState(
     searchParams ? searchParams.get("href") : ""
@@ -64,25 +68,6 @@ export default function RootPage() {
   const [pageId, setpageId] = useState("")
   const { setTheme } = useTheme()
 
-
-  React.useEffect(() => {
-    const load = async () => {
-      debugger
-      const res = await https<any>(
-        token ?? "",
-        "GET",
-        "https://christianiabpos.sharepoint.com/sites/intra365/_api/sitepages/pages/GetTranslations('16399343-d200-4bfe-b67d-4f8321a0dfab')"
-      )
-      if (!res.hasError) {
-        
-        //setMe(res.data)
-      }
-    }
-    if (token && pageId) {
-     
-      load()
-    }
-  }, [token, pageId])
 
   React.useEffect(() => {
     setTheme("transparent")
@@ -232,10 +217,64 @@ mode 1
 
   </div>
 }
+if (mode==="leftbar"){
+  return <div className="h-screen w-[64px] overflow-hidden  bg-gray-200 ">
+
+<MagicBar accessToken={token??""} toolbarId={3} />
+{/* <Button
+          variant="link"
+          onClick={() => {
+            window.parent.postMessage(
+              {
+                type: "closemagicbox",
+                data: "",
+              },
+              "*"
+            )
+          }}
+        >Close</Button> */}
+
+  </div>
+}
+
+if (showtool){
+  return  <div className="hidden bg-gray-200  p-3">
+  <Dialog open={showtool?true:false} onOpenChange={()=>{   window.parent.postMessage(
+              {
+                type: "hidetool",
+                data: "",
+              },
+              "*"
+            )}}  >
+   
+    <DialogContent className=" bg-white" style={{minHeight:"calc(100vh - 100px)",minWidth:"calc(100vw - 100px)"}} >
+      <DialogHeader>
+        <DialogTitle>Tool</DialogTitle>
+        <DialogDescription>
+          ...
+        </DialogDescription>
+      </DialogHeader>
+      <div className="grid gap-4 py-4 ">
+        <div className="grid grid-cols-4 items-center gap-4">
+       <iframe src={showtool} width="600px" height="400px" style={{minHeight:"calc(100vh - 300px)",minWidth:"calc(100vw - 140px)"}} ></iframe>
+
+
+        </div>
+
+      </div>
+      <DialogFooter>
+   
+        {!copying && !newPageUrl &&
+          <Button type="button" disabled={sourceUrl === ""} onClick={() => onCopyPage()}>Get help with this app</Button>}
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
+</div>
+}
   return (
 
 
-    <div className="m-4 overflow-scroll ">
+    <div className="m-4 h-screen overflow-hidden bg-gray-200">
 
       <div>
         Standard SharePoint
@@ -402,7 +441,44 @@ mode 1
               </DialogContent>
             </Dialog>
           </div>
+          <div className="hidden p-3">
+            <Dialog open={showtool?true:false} onOpenChange={()=>{setshowtool(showtool ? "":"")}}  >
+             
+              <DialogContent className="bg-white sm:max-w-[600px]" >
+                <DialogHeader>
+                  <DialogTitle>Tool</DialogTitle>
+                  <DialogDescription>
+                    ...
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4 ">
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="name" className="text-right">
+                      Source URL
+                    </Label>
+                    <Input
+                      value={sourceUrl}
+                      onChange={(e) => {
+                        setsourceUrl(e.target.value)
+                      }}
+                      id="name"
+                      className="col-span-3"
+                    />
+                  </div>
 
+                </div>
+                <DialogFooter>
+                  {copying && <div>Copying... Expect 5-15 seconds delay</div>}
+                  {errorMessage && <div className="text-red-500">{errorMessage}</div>}
+                  {newPageUrl && <div>
+                    <Button type="button" ><Link href={newPageUrl} target="_blank">Open new page</Link> </Button>
+                  </div>}
+                  {!copying && !newPageUrl &&
+                    <Button type="button" disabled={sourceUrl === ""} onClick={() => onCopyPage()}>Copy</Button>}
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </div>
           <div className=" px-3">
             <Link href="https://clarity.microsoft.com/projects/view/iwgs4fzf64/dashboard?date=Last%203%20days" target="_blank">
               <Button variant={"link"}>
